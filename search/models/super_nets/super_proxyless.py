@@ -130,7 +130,7 @@ class SuperProxylessNASNets(ProxylessNASNets):
     def reset_binary_gates(self):
         for m in self.redundant_modules:
             try:
-                m.binarize()
+                m.binarize() # mix_op.py 172번째 줄
             except AttributeError:
                 print(type(m), ' do not support binarize')
 

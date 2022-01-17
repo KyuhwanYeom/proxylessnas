@@ -151,7 +151,7 @@ class ArchSearchRunManager:
 
         self.arch_search_config = arch_search_config
 
-        # init architecture parameters
+        # init architecture parameters (super_proxyless.py 121번째줄)
         self.net.init_arch_params(
             self.arch_search_config.arch_init_type, self.arch_search_config.arch_init_ratio,
         )
@@ -268,8 +268,8 @@ class ArchSearchRunManager:
                     param_group['lr'] = warmup_lr
                 images, labels = images.to(self.run_manager.device), labels.to(self.run_manager.device)
                 # compute output
-                self.net.reset_binary_gates()  # random sample binary gates
-                self.net.unused_modules_off()  # remove unused module for speedup
+                self.net.reset_binary_gates()  # random sample binary gates (super_proxyless.py 130번째줄)
+                self.net.unused_modules_off()  # remove unused module for speedup (super_proxyless.py 153번째줄)
                 output = self.run_manager.net(images)  # forward (DataParallel)
                 # loss
                 if self.run_manager.run_config.label_smoothing > 0:

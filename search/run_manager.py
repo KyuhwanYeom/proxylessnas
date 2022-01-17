@@ -192,7 +192,7 @@ class RunManager:
         # net info
         self.print_net_info(measure_latency)
 
-        self.criterion = nn.CrossEntropyLoss()
+        self.criterion = nn.CrossEntropyLoss() # cross-entropy loss 정의
         if self.run_config.no_decay_keys:
             keys = self.run_config.no_decay_keys.split('#')
             self.optimizer = self.run_config.build_optimizer([
