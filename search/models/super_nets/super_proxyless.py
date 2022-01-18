@@ -158,7 +158,7 @@ class SuperProxylessNASNets(ProxylessNASNets):
                 involved_index = m.active_index + m.inactive_index
             else:
                 involved_index = m.active_index
-            for i in range(m.n_choices):
+            for i in range(m.n_choices): # n_choices : candiate path의 개수
                 if i not in involved_index:
                     unused[i] = m.candidate_ops[i]
                     m.candidate_ops[i] = None

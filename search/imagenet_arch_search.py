@@ -8,7 +8,7 @@ from models import ImagenetRunConfig
 from nas_manager import *
 from models.super_nets.super_proxyless import SuperProxylessNASNets
 
-# ref values
+# ref values (latency)
 ref_values = {
     'flops': {
         '0.35': 59 * 1e6,
@@ -56,11 +56,23 @@ parser.add_argument('--init_div_groups', action='store_true')
 parser.add_argument('--validation_frequency', type=int, default=1)
 parser.add_argument('--print_frequency', type=int, default=10)
 
-parser.add_argument('--n_worker', type=int, default=32)
+parser.add_argument('--n_worker', type=int, default=32) # how many subprocesses to use for data loading
 parser.add_argument('--resize_scale', type=float, default=0.08)
 parser.add_argument('--distort_color', type=str, default='normal', choices=['normal', 'strong', 'None'])
 
 """ net config """
+"""
+        Parameters
+        ----------
+        width_stages: str
+            width (output channels) of each cell stage in the block
+        n_cell_stages: str
+            number of cells in each cell stage
+        stride_strages: str
+            stride of each cell stage in the block
+        width_mult : int
+            the scale factor of width
+"""
 parser.add_argument('--width_stages', type=str, default='24,40,80,96,192,320')
 parser.add_argument('--n_cell_stages', type=str, default='4,4,4,4,4,1')
 parser.add_argument('--stride_stages', type=str, default='2,2,2,1,2,1')
@@ -71,7 +83,7 @@ parser.add_argument('--dropout', type=float, default=0)
 
 # architecture search config
 """ arch search algo and warmup """
-parser.add_argument('--arch_algo', type=str, default='grad', choices=['grad', 'rl'])
+parser.add_argument('--arch_algo', type=str, default='grad', choices=['grad', 'rl']) # gradient vs reinforce
 parser.add_argument('--warmup_epochs', type=int, default=40)
 """ shared hyper-parameters """
 parser.add_argument('--arch_init_type', type=str, default='normal', choices=['normal', 'uniform'])
@@ -103,7 +115,7 @@ parser.add_argument('--rl_tradeoff_ratio', type=float, default=0.1)
 if __name__ == '__main__':
     args = parser.parse_args()
 
-    torch.manual_seed(args.manual_seed)
+    torch.manual_seed(args.manual_seed) # seed 설정
     torch.cuda.manual_seed_all(args.manual_seed)
     np.random.seed(args.manual_seed)
 
@@ -138,7 +150,7 @@ if __name__ == '__main__':
         '5x5_MBConv3', '5x5_MBConv6',
         '7x7_MBConv3', '7x7_MBConv6',
     ]
-    super_net = SuperProxylessNASNets(
+    super_net = SuperProxylessNASNets( # over-parameterized net 생성 (큰 net)
         width_stages=args.width_stages, n_cell_stages=args.n_cell_stages, stride_stages=args.stride_stages,
         conv_candidates=args.conv_candidates, n_classes=run_config.data_provider.n_classes, width_mult=args.width_mult,
         bn_param=(args.bn_momentum, args.bn_eps), dropout_rate=args.dropout
@@ -205,5 +217,5 @@ if __name__ == '__main__':
     if arch_search_run_manager.warmup:
         arch_search_run_manager.warm_up(warmup_epochs=args.warmup_epochs)
 
-    # joint training
+    # joint training (여기서부터 본격적으로 train)
     arch_search_run_manager.train(fix_net_weights=args.debug)

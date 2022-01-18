@@ -256,7 +256,7 @@ class ArchSearchRunManager:
             top1 = AverageMeter()
             top5 = AverageMeter()
             # switch to train mode
-            self.run_manager.net.train()
+            self.run_manager.net.train() # 328번째줄
 
             end = time.time()
             for i, (images, labels) in enumerate(data_loader):
@@ -287,8 +287,8 @@ class ArchSearchRunManager:
                 self.run_manager.net.zero_grad()  # zero grads of weight_param, arch_param & binary_param
                 loss.backward()
                 self.run_manager.optimizer.step()  # update weight parameters
-                # unused modules back
-                self.net.unused_modules_back()
+                # unused modules back(복귀)
+                self.net.unused_modules_back() # super_proxyless.py 167번째줄
                 # measure elapsed time
                 batch_time.update(time.time() - end)
                 end = time.time()
@@ -331,7 +331,7 @@ class ArchSearchRunManager:
         if fix_net_weights:
             data_loader = [(0, 0)] * nBatch
 
-        arch_param_num = len(list(self.net.architecture_parameters()))
+        arch_param_num = len(list(self.net.architecture_parameters())) # super_proxyless.py 92번째줄
         binary_gates_num = len(list(self.net.binary_gates()))
         weight_param_num = len(list(self.net.weight_parameters()))
         print(

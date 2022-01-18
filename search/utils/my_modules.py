@@ -65,9 +65,9 @@ class MyNetwork(MyModule):
         return None
 
     def init_model(self, model_init, init_div_groups=False):
-        for m in self.modules():
+        for m in self.modules(): # m은 각종 layer (Conv, BatchNorm, Linear ...)
             if isinstance(m, nn.Conv2d):
-                if model_init == 'he_fout':
+                if model_init == 'he_fout': # Xavier initialization?
                     n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
                     if init_div_groups:
                         n /= m.groups
