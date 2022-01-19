@@ -326,7 +326,7 @@ class ArchSearchRunManager:
             self.run_manager.save_model(checkpoint, model_name='warmup.pth.tar')
 
     def train(self, fix_net_weights=False):
-        data_loader = self.run_manager.run_config.train_loader
+        data_loader = self.run_manager.run_config.train_loader # self.run_manager는 앞의 arch_search_run_manager
         nBatch = len(data_loader)
         if fix_net_weights:
             data_loader = [(0, 0)] * nBatch
@@ -341,7 +341,7 @@ class ArchSearchRunManager:
 
         update_schedule = self.arch_search_config.get_update_schedule(nBatch)
 
-        for epoch in range(self.run_manager.start_epoch, self.run_manager.run_config.n_epochs):
+        for epoch in range(self.run_manager.start_epoch, self.run_manager.run_config.n_epochs): # 0 ~ 120 (n_epochs = 120)
             print('\n', '-' * 30, 'Train epoch: %d' % (epoch + 1), '-' * 30, '\n')
             batch_time = AverageMeter()
             data_time = AverageMeter()
@@ -356,7 +356,7 @@ class ArchSearchRunManager:
             for i, (images, labels) in enumerate(data_loader):
                 data_time.update(time.time() - end)
                 # lr
-                lr = self.run_manager.run_config.adjust_learning_rate(
+                lr = self.run_manager.run_config.adjust_learning_rate( # cosine annealing 사용
                     self.run_manager.optimizer, epoch, batch=i, nBatch=nBatch
                 )
                 # network entropy
@@ -557,7 +557,7 @@ class ArchSearchRunManager:
         output = self.run_manager.net(images)
         time3 = time.time()  # time
         # loss
-        ce_loss = self.run_manager.criterion(output, labels)
+        ce_loss = self.run_manager.criterion(output, labels) # cross entropy loss
         if self.arch_search_config.target_hardware is None:
             expected_value = None
         elif self.arch_search_config.target_hardware == 'mobile':
@@ -568,7 +568,7 @@ class ArchSearchRunManager:
             expected_value = self.net.expected_flops(input_var)
         else:
             raise NotImplementedError
-        loss = self.arch_search_config.add_regularization_loss(ce_loss, expected_value)
+        loss = self.arch_search_config.add_regularization_loss(ce_loss, expected_value) # loss = L_CE + E(latency)
         # compute gradient and do SGD step
         self.run_manager.net.zero_grad()  # zero grads of weight_param, arch_param & binary_param
         loss.backward()

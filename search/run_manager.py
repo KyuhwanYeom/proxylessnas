@@ -60,7 +60,7 @@ class RunConfig:
 
     """ learning rate """
 
-    def _calc_learning_rate(self, epoch, batch=0, nBatch=None):
+    def _calc_learning_rate(self, epoch, batch=0, nBatch=None): # cosine annealing 사용
         if self.lr_schedule_type == 'cosine':
             T_total = self.n_epochs * nBatch
             T_cur = epoch * nBatch + batch
@@ -162,7 +162,7 @@ class RunConfig:
 
 class RunManager:
 
-    def __init__(self, path, net, run_config: RunConfig, out_log=True, measure_latency=None):
+    def __init__(self, path, net, run_config: RunConfig, out_log=True, measure_latency=None): # 여기서 net = super net
         self.path = path
         self.net = net
         self.run_config = run_config
@@ -255,11 +255,11 @@ class RunManager:
                 assert isinstance(net, ProxylessNASNets)
                 # first conv
                 predicted_latency += self.latency_estimator.predict(
-                    'Conv', [224, 224, 3], [112, 112, net.first_conv.out_channels]
+                    'Conv', [224, 224, 3], [112, 112, net.first_conv.out_channels] # net.first_conv.out_channels = 32
                 )
                 # feature mix layer
                 predicted_latency += self.latency_estimator.predict(
-                    'Conv_1', [7, 7, net.feature_mix_layer.in_channels], [7, 7, net.feature_mix_layer.out_channels]
+                    'Conv_1', [7, 7, net.feature_mix_layer.in_channels], [7, 7, net.feature_mix_layer.out_channels] # 7 x 7 x 320, 7 x 7 x 1280
                 )
                 # classifier
                 predicted_latency += self.latency_estimator.predict(

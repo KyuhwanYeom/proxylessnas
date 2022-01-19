@@ -26,7 +26,7 @@ def download_url(url, model_dir='~/.torch/proxyless_nas', overwrite=False):
     return cached_file
 
 
-class LatencyEstimator(object):
+class LatencyEstimator(object): # 기존에 latency들을 미리 측정해놓음
     def __init__(self, url='https://file.lzhu.me/projects/proxylessNAS/LatencyTools/mobile_trim.yaml'):
         fname = download_url(url, overwrite=True)
 
@@ -62,7 +62,7 @@ class LatencyEstimator(object):
         if ltype in ('expanded_conv',):
             assert None not in (expand, kernel, stride, idskip)
             infos += ['expand:%d' % expand, 'kernel:%d' % kernel, 'stride:%d' % stride, 'idskip:%d' % idskip]
-        key = '-'.join(infos)
+        key = '-'.join(infos) 
         return self.lut[key]['mean']
 
 

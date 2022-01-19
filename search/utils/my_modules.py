@@ -66,7 +66,7 @@ class MyNetwork(MyModule):
 
     def init_model(self, model_init, init_div_groups=False):
         for m in self.modules(): # m은 각종 layer (Conv, BatchNorm, Linear ...)
-            if isinstance(m, nn.Conv2d):
+            if isinstance(m, nn.Conv2d): # conv layer면
                 if model_init == 'he_fout': # Xavier initialization?
                     n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
                     if init_div_groups:
@@ -79,10 +79,10 @@ class MyNetwork(MyModule):
                     m.weight.data.normal_(0, math.sqrt(2. / n))
                 else:
                     raise NotImplementedError
-            elif isinstance(m, nn.BatchNorm2d):
+            elif isinstance(m, nn.BatchNorm2d): # batch norm이면 weight = 1, bias = 0
                 m.weight.data.fill_(1)
                 m.bias.data.zero_()
-            elif isinstance(m, nn.Linear):
+            elif isinstance(m, nn.Linear): # linear면 weight = uniform, bias = 0
                 stdv = 1. / math.sqrt(m.weight.size(1))
                 m.weight.data.uniform_(-stdv, stdv)
                 if m.bias is not None:

@@ -86,7 +86,7 @@ parser.add_argument('--dropout', type=float, default=0)
 parser.add_argument('--arch_algo', type=str, default='grad', choices=['grad', 'rl']) # gradient vs reinforce
 parser.add_argument('--warmup_epochs', type=int, default=40)
 """ shared hyper-parameters """
-parser.add_argument('--arch_init_type', type=str, default='normal', choices=['normal', 'uniform'])
+parser.add_argument('--arch_init_type', type=str, default='normal', choices=['normal', 'uniform']) # normal distribution vs uniform distribution
 parser.add_argument('--arch_init_ratio', type=float, default=1e-3)
 parser.add_argument('--arch_opt_type', type=str, default='adam', choices=['adam'])
 parser.add_argument('--arch_lr', type=float, default=1e-3)
@@ -95,7 +95,7 @@ parser.add_argument('--arch_adam_beta2', type=float, default=0.999)  # arch_opt_
 parser.add_argument('--arch_adam_eps', type=float, default=1e-8)  # arch_opt_param
 parser.add_argument('--arch_weight_decay', type=float, default=0)
 parser.add_argument('--target_hardware', type=str, default=None, choices=['mobile', 'cpu', 'gpu8', 'flops', None])
-""" Grad hyper-parameters """
+""" Grad hyper-parameters """ # gradient descent algorithm
 parser.add_argument('--grad_update_arch_param_every', type=int, default=5)
 parser.add_argument('--grad_update_steps', type=int, default=1)
 parser.add_argument('--grad_binary_mode', type=str, default='full_v2', choices=['full_v2', 'full', 'two'])
@@ -164,7 +164,7 @@ if __name__ == '__main__':
         }
     else:
         args.arch_opt_param = None
-    if args.target_hardware is None:
+    if args.target_hardware is None: # target hardware가 없으면 latency 측정필요 x
         args.ref_value = None
     else:
         args.ref_value = ref_values[args.target_hardware]['%.2f' % args.width_mult]
