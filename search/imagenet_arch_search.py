@@ -29,7 +29,7 @@ ref_values = {
 parser = argparse.ArgumentParser()
 parser.add_argument('--path', type=str, default=None)
 parser.add_argument('--gpu', help='gpu available', default='0,1,2,3')
-parser.add_argument('--resume', action='store_true')
+parser.add_argument('--resume', action='store_true') # 인자를 적으면 True가 저장됨
 parser.add_argument('--debug', help='freeze the weight parameters', action='store_true')
 parser.add_argument('--manual_seed', default=0, type=int)
 
@@ -152,7 +152,7 @@ if __name__ == '__main__':
     ]
     super_net = SuperProxylessNASNets( # over-parameterized net 생성 (큰 net)
         width_stages=args.width_stages, n_cell_stages=args.n_cell_stages, stride_stages=args.stride_stages,
-        conv_candidates=args.conv_candidates, n_classes=run_config.data_provider.n_classes, width_mult=args.width_mult,
+        conv_candidates=args.conv_candidates, n_classes=1000, width_mult=args.width_mult,
         bn_param=(args.bn_momentum, args.bn_eps), dropout_rate=args.dropout
     )
 

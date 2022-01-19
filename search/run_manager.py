@@ -186,8 +186,8 @@ class RunManager:
             self.net.to(self.device)
             cudnn.benchmark = True
         else:
-            raise ValueError
-            # self.device = torch.device('cpu')
+            #raise ValueError
+            self.device = torch.device('cpu')
 
         # net info
         self.print_net_info(measure_latency)
@@ -335,7 +335,7 @@ class RunManager:
         if self.out_log:
             print(self.net)
 
-        # parameters
+        # parameters 개수
         if isinstance(self.net, nn.DataParallel):
             total_params = count_parameters(self.net.module)
         else:
@@ -347,10 +347,10 @@ class RunManager:
         }
 
         # flops
-        flops = self.net_flops()
-        if self.out_log:
-            print('Total FLOPs: %.1fM' % (flops / 1e6))
-        net_info['flops'] = '%.1fM' % (flops / 1e6)
+        #flops = self.net_flops()
+        #if self.out_log:
+        #    print('Total FLOPs: %.1fM' % (flops / 1e6))
+        #net_info['flops'] = '%.1fM' % (flops / 1e6)
 
         # latency
         latency_types = [] if measure_latency is None else measure_latency.split('#')

@@ -137,7 +137,7 @@ class SuperProxylessNASNets(ProxylessNASNets):
     def set_arch_param_grad(self):
         for m in self.redundant_modules:
             try:
-                m.set_arch_param_grad()
+                m.set_arch_param_grad() # mix_op.py 210번째 줄
             except AttributeError:
                 print(type(m), ' do not support `set_arch_param_grad()`')
 

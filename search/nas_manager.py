@@ -256,14 +256,14 @@ class ArchSearchRunManager:
             top1 = AverageMeter()
             top5 = AverageMeter()
             # switch to train mode
-            self.run_manager.net.train() # 328번째줄
+            self.run_manager.net.train()
 
             end = time.time()
             for i, (images, labels) in enumerate(data_loader):
                 data_time.update(time.time() - end)
                 # lr
                 T_cur = epoch * nBatch + i
-                warmup_lr = 0.5 * lr_max * (1 + math.cos(math.pi * T_cur / T_total))
+                warmup_lr = 0.5 * lr_max * (1 + math.cos(math.pi * T_cur / T_total)) # cosine annealing
                 for param_group in self.run_manager.optimizer.param_groups:
                     param_group['lr'] = warmup_lr
                 images, labels = images.to(self.run_manager.device), labels.to(self.run_manager.device)
@@ -360,7 +360,7 @@ class ArchSearchRunManager:
                     self.run_manager.optimizer, epoch, batch=i, nBatch=nBatch
                 )
                 # network entropy
-                net_entropy = self.net.entropy()
+                net_entropy = self.net.entropy() # super_proxyless.py 114번째줄
                 entropy.update(net_entropy.data.item() / arch_param_num, 1)
                 # train weight parameters if not fix_net_weights
                 if not fix_net_weights:
@@ -400,7 +400,7 @@ class ArchSearchRunManager:
                             )
                             self.write_log(log_str, prefix='rl', should_print=False)
                         elif isinstance(self.arch_search_config, GradientArchSearchConfig):
-                            arch_loss, exp_value = self.gradient_step()
+                            arch_loss, exp_value = self.gradient_step() # gradient update
                             used_time = time.time() - start_time
                             log_str = 'Architecture [%d-%d]\t Time %.4f\t Loss %.4f\t %s %s' % \
                                       (epoch + 1, i, used_time, arch_loss,
@@ -545,9 +545,9 @@ class ArchSearchRunManager:
         # switch to train mode
         self.run_manager.net.train()
         # Mix edge mode
-        MixedEdge.MODE = self.arch_search_config.binary_mode
+        MixedEdge.MODE = self.arch_search_config.binary_mode # full mode
         time1 = time.time()  # time
-        # sample a batch of data from validation set
+        # sample a batch of data from validation set (architecture parameter은 validation set에서 update)
         images, labels = self.run_manager.run_config.valid_next_batch
         images, labels = images.to(self.run_manager.device), labels.to(self.run_manager.device)
         time2 = time.time()  # time
@@ -573,7 +573,7 @@ class ArchSearchRunManager:
         self.run_manager.net.zero_grad()  # zero grads of weight_param, arch_param & binary_param
         loss.backward()
         # set architecture parameter gradients
-        self.net.set_arch_param_grad()
+        self.net.set_arch_param_grad() # super_proxyless.py 137번째줄
         self.arch_optimizer.step()
         if MixedEdge.MODE == 'two':
             self.net.rescale_updated_arch_param()

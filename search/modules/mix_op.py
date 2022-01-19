@@ -208,7 +208,7 @@ class MixedEdge(MyModule):
                 param.grad = None
 
     def set_arch_param_grad(self):
-        binary_grads = self.AP_path_wb.grad.data
+        binary_grads = self.AP_path_wb.grad.data  # ∂L/∂g
         if self.active_op.is_zero_layer():
             self.AP_path_alpha.grad = None
             return

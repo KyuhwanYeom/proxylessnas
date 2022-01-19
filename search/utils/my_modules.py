@@ -50,6 +50,7 @@ class MyNetwork(MyModule):
 
     def set_bn_param(self, momentum, eps):
         for m in self.modules():
+            print(m)
             if isinstance(m, nn.BatchNorm2d) or isinstance(m, nn.BatchNorm1d):
                 m.momentum = momentum
                 m.eps = eps
