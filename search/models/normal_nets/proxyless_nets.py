@@ -29,7 +29,7 @@ class MobileInvertedResidualBlock(MyModule):
         self.shortcut = shortcut
 
     def forward(self, x):
-        if self.mobile_inverted_conv.is_zero_layer():
+        if self.mobile_inverted_conv.is_zero_layer(): # mix_op.py 96번째줄
             res = x
         elif self.shortcut is None or self.shortcut.is_zero_layer():
             res = self.mobile_inverted_conv(x)

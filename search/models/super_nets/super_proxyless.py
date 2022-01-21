@@ -32,6 +32,7 @@ class SuperProxylessNASNets(ProxylessNASNets):
             ['3x3_MBConv1'],
             input_channel, first_cell_width, 1, 'weight_bn_act',
         ), )
+        print(first_block_conv)
         if first_block_conv.n_choices == 1:
             first_block_conv = first_block_conv.candidate_ops[0]
         first_block = MobileInvertedResidualBlock(first_block_conv, None)
@@ -64,7 +65,7 @@ class SuperProxylessNASNets(ProxylessNASNets):
 
         # feature mix layer
         last_channel = make_divisible(1280 * width_mult, 8) if width_mult > 1.0 else 1280
-        feature_mix_layer = ConvLayer(
+        feature_mix_layer = ConvLayer( # 320 -> 1280
             input_channel, last_channel, kernel_size=1, use_bn=True, act_func='relu6', ops_order='weight_bn_act',
         )
 
@@ -175,7 +176,7 @@ class SuperProxylessNASNets(ProxylessNASNets):
     def set_chosen_op_active(self):
         for m in self.redundant_modules:
             try:
-                m.set_chosen_op_active()
+                m.set_chosen_op_active() # mix_op.py 104번째줄
             except AttributeError:
                 print(type(m), ' do not support `set_chosen_op_active()`')
 

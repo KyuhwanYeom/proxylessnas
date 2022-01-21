@@ -224,7 +224,7 @@ class ArchSearchRunManager:
         self.run_manager.run_config.valid_loader.batch_sampler.drop_last = False
 
         # set chosen op active
-        self.net.set_chosen_op_active()
+        self.net.set_chosen_op_active() # super_proxyless.py 175번째줄
         # remove unused modules
         self.net.unused_modules_off()
         # test on validation set under train mode
@@ -561,7 +561,7 @@ class ArchSearchRunManager:
         if self.arch_search_config.target_hardware is None:
             expected_value = None
         elif self.arch_search_config.target_hardware == 'mobile':
-            expected_value = self.net.expected_latency(self.run_manager.latency_estimator)
+            expected_value = self.net.expected_latency(self.run_manager.latency_estimator) # super_proxyless.py 189번째줄
         elif self.arch_search_config.target_hardware == 'flops':
             data_shape = [1] + list(self.run_manager.run_config.data_provider.data_shape)
             input_var = torch.zeros(data_shape, device=self.run_manager.device)

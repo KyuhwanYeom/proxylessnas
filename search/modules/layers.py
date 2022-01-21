@@ -59,7 +59,7 @@ class My2DLayer(MyModule):
         modules['weight'] = self.weight_op()
 
         # add modules
-        for op in self.ops_list:
+        for op in self.ops_list: # ops_list = {'bn', 'act', 'dropout', 'weight'}
             if modules[op] is None:
                 continue
             elif op == 'weight':

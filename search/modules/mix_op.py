@@ -41,7 +41,6 @@ def build_candidate_ops(candidate_ops, in_channels, out_channels, stride, ops_or
         '7x7_MBConv5': lambda in_C, out_C, S: MBInvertedConvLayer(in_C, out_C, 7, S, 5),
         '7x7_MBConv6': lambda in_C, out_C, S: MBInvertedConvLayer(in_C, out_C, 7, S, 6),
     })
-
     return [
         name2ops[name](in_channels, out_channels, stride) for name in candidate_ops
     ]
@@ -110,7 +109,7 @@ class MixedEdge(MyModule):
 
     """ """
 
-    def forward(self, x):
+    def forward(self, x): # 여기가 forward!
         if MixedEdge.MODE == 'full' or MixedEdge.MODE == 'two':
             output = 0
             for _i in self.active_index:
@@ -208,7 +207,7 @@ class MixedEdge(MyModule):
                 param.grad = None
 
     def set_arch_param_grad(self):
-        binary_grads = self.AP_path_wb.grad.data  # ∂L/∂g
+        binary_grads = self.AP_path_wb.grad.data  # ∂L/∂g (모든 path에 대한 gardient 구함)
         if self.active_op.is_zero_layer():
             self.AP_path_alpha.grad = None
             return
