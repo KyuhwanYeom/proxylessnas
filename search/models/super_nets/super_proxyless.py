@@ -32,7 +32,6 @@ class SuperProxylessNASNets(ProxylessNASNets):
             ['3x3_MBConv1'],
             input_channel, first_cell_width, 1, 'weight_bn_act',
         ), )
-        print(first_block_conv)
         if first_block_conv.n_choices == 1:
             first_block_conv = first_block_conv.candidate_ops[0]
         first_block = MobileInvertedResidualBlock(first_block_conv, None)
@@ -128,7 +127,7 @@ class SuperProxylessNASNets(ProxylessNASNets):
             else:
                 raise NotImplementedError
 
-    def reset_binary_gates(self):
+    def reset_binary_gates(self): # warmup, train, alpha의 gradientstep 할 때 쓰임
         for m in self.redundant_modules:
             try:
                 m.binarize() # mix_op.py 172번째 줄
@@ -142,7 +141,7 @@ class SuperProxylessNASNets(ProxylessNASNets):
             except AttributeError:
                 print(type(m), ' do not support `set_arch_param_grad()`')
 
-    def rescale_updated_arch_param(self):
+    def rescale_updated_arch_param(self):  # mix_op.py 238번째 줄
         for m in self.redundant_modules:
             try:
                 m.rescale_updated_arch_param()
@@ -173,7 +172,7 @@ class SuperProxylessNASNets(ProxylessNASNets):
                 m.candidate_ops[i] = unused[i]
         self._unused_modules = None
 
-    def set_chosen_op_active(self):
+    def set_chosen_op_active(self): # validate할 때 쓰임
         for m in self.redundant_modules:
             try:
                 m.set_chosen_op_active() # mix_op.py 104번째줄

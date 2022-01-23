@@ -67,7 +67,7 @@ class MixedEdge(MyModule):
         return len(self.candidate_ops)
 
     @property
-    def probs_over_ops(self):
+    def probs_over_ops(self): # probs는 배열이 됨
         probs = F.softmax(self.AP_path_alpha, dim=0)  # softmax to probability
         return probs
 
@@ -101,9 +101,9 @@ class MixedEdge(MyModule):
         """ assume only one path is active """
         return self.candidate_ops[self.active_index[0]]
 
-    def set_chosen_op_active(self):
+    def set_chosen_op_active(self): # validate 할 때 쓰임 (맨마지막!!!!!)
         chosen_idx, _ = self.chosen_index
-        self.active_index = [chosen_idx]
+        self.active_index = [chosen_idx]  # inactive_index는 active index 제외 모두 (validate 이전의 초기화 부분에서는 inactive_index도 단 한개!)
         self.inactive_index = [_i for _i in range(0, chosen_idx)] + \
                               [_i for _i in range(chosen_idx + 1, self.n_choices)]
 
@@ -112,7 +112,7 @@ class MixedEdge(MyModule):
     def forward(self, x): # 여기가 forward!
         if MixedEdge.MODE == 'full' or MixedEdge.MODE == 'two':
             output = 0
-            for _i in self.active_index:
+            for _i in self.active_index: 
                 oi = self.candidate_ops[_i](x)
                 output = output + self.AP_path_wb[_i] * oi
             for _i in self.inactive_index:
@@ -225,9 +225,9 @@ class MixedEdge(MyModule):
                     self.AP_path_alpha.grad.data[origin_i] += \
                         binary_grads[origin_j] * probs_slice[j] * (delta_ij(i, j) - probs_slice[i])
             for _i, idx in enumerate(self.active_index):
-                self.active_index[_i] = (idx, self.AP_path_alpha.data[idx].item())
+                self.active_index[_i] = (idx, self.AP_path_alpha.data[idx].item()) # ex) self.active_index[0] = (3, 0.14301)
             for _i, idx in enumerate(self.inactive_index):
-                self.inactive_index[_i] = (idx, self.AP_path_alpha.data[idx].item())
+                self.inactive_index[_i] = (idx, self.AP_path_alpha.data[idx].item()) # ex) self.inactive_index[0] = (1, 0.2313)
         else:
             probs = self.probs_over_ops.data
             for i in range(self.n_choices):
@@ -236,11 +236,13 @@ class MixedEdge(MyModule):
         return
 
     def rescale_updated_arch_param(self):
-        if not isinstance(self.active_index[0], tuple):
+        if not isinstance(self.active_index[0], tuple): # ex) self.active_index[0] = (3, 0.14301)
             assert self.active_op.is_zero_layer()
             return
-        involved_idx = [idx for idx, _ in (self.active_index + self.inactive_index)]
-        old_alphas = [alpha for _, alpha in (self.active_index + self.inactive_index)]
+        involved_idx = [idx for idx, _ in (self.active_index + self.inactive_index)] # ex) [3, 1]
+        old_alphas = [alpha for _, alpha in (self.active_index + self.inactive_index)] # ex) [0.14301, 0.2313]
+        
+        # ex) [tensor(0.1400), tensor(0.1200)] when AP_path_alpha = Parameter(torch.Tensor([0.1, 0.12, 0.13, 0.14]))
         new_alphas = [self.AP_path_alpha.data[idx] for idx in involved_idx]
 
         offset = math.log(

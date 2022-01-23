@@ -268,7 +268,7 @@ class ArchSearchRunManager:
                     param_group['lr'] = warmup_lr
                 images, labels = images.to(self.run_manager.device), labels.to(self.run_manager.device)
                 # compute output
-                self.net.reset_binary_gates()  # random sample binary gates (super_proxyless.py 130번째줄)
+                self.net.reset_binary_gates()  # random sample binary gates (super_proxyless.py 131번째줄)
                 self.net.unused_modules_off()  # remove unused module for speedup (super_proxyless.py 153번째줄)
                 output = self.run_manager.net(images)  # forward (DataParallel)
                 # loss
@@ -576,7 +576,7 @@ class ArchSearchRunManager:
         self.net.set_arch_param_grad() # super_proxyless.py 137번째줄
         self.arch_optimizer.step()
         if MixedEdge.MODE == 'two':
-            self.net.rescale_updated_arch_param()
+            self.net.rescale_updated_arch_param()  # super_proxyless.py 145번째줄
         # back to normal mode
         self.net.unused_modules_back()
         MixedEdge.MODE = None
